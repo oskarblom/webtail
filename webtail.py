@@ -26,7 +26,7 @@ def tail(sock):
     for msg in sock.makefile():
         fan.fanout(msg)
 
-def get_args()
+def get_args():
     if not len(sys.argv) == 3:
         sys.stderr.write(
             "Warning: missing arguments. Starting in disconnected mode\n" +
@@ -45,7 +45,7 @@ def get_sock(host, port):
 if __name__ == "__main__":
     host, port = get_args()
     app.debug = True
-    app.connected_mode = not host or not port
+    app.connected_mode = True if host and port else False
     try:
         if app.connected_mode:
             sock = get_sock(host, port)

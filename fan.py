@@ -44,6 +44,6 @@ class Fan(object):
         self.app.route("/subscribe")(subscribe)
 
     def fanout(self, data):
-        sse = ServerSentEvent(data)
+        msg = ServerSentEvent(data).encode()
         for sub in self.subscriptions:
-            sub.put(sse.encode())
+            sub.put(msg)
