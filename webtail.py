@@ -18,36 +18,44 @@ def debug():
 
 @app.route("/")
 def index():
-    return render_template("index.html")
+    connected = str(app.connected_mode).lower()
+    return render_template("index.html", connected=connected)
 
 def tail(sock):
+    #So we don't need to fiddle with lines and buffers
     for msg in sock.makefile():
         fan.fanout(msg)
 
-if __name__ == "__main__":
-    debug = True
+def get_args()
     if not len(sys.argv) == 3:
-        sys.stderr.write("Error: missing arguments\n")
-        sys.stderr.write("Usage: python webtail.py remotehost port\n")
-        exit(1)
+        sys.stderr.write(
+            "Warning: missing arguments. Starting in disconnected mode\n" +
+            "Usage: python webtail.py remotehost port\n")
+        return None, None
 
-    host, port = sys.argv[1:]
+    return sys.argv[1:]
 
+def get_sock(host, port):
+    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+    sock.connect((host, port))
+
+    return sock
+
+if __name__ == "__main__":
+    host, port = get_args()
+    app.debug = True
+    app.connected_mode = not host or not port
     try:
-        if not debug:
-            sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-            sock.connect((host, port))
-
+        if app.connected_mode:
+            sock = get_sock(host, port)
             gevent.spawn(tail, sock)
         else:
             sock = None
 
-        app.debug = True
         server = WSGIServer(("", 5000), app)
         server.serve_forever()
     except KeyboardInterrupt:
         if sock:
             sock.close()
-        if server:
-            server.close()
+        server.close()
