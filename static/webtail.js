@@ -1,8 +1,46 @@
 (function() {
-    var messageContainer = $("#messagecontainer");
+    var MAX_MESSAGES = 10000;
+
+    var $messageContainer = $("#messagecontainer");
+    var currentMessages = 0;
+    var autoScroll = true;
+
     var onMessage = function(msg) {
-        console.log(msg);
+        //TODO: Highligt || filter
+        if (currentMessages === MAX_MESSAGES) {
+            $messageContainer.find(":first").remove();
+        } else {
+            currentMessages++;
+        }
+        $messageContainer.append("<div class='message'>" + msg.data + "</div>");
+
+        if (autoScroll) {
+            window.scrollTo(0, document.body.scrollHeight);
+        }
     };
+
+    /*
+    var onScroll = function(event) {
+        //console.log(event);
+        console.log(window.scrollX);
+        console.log(window.scrollY);
+        if (autoScroll) {
+            autoScroll = false;
+        }
+    };
+    */
+
+    var onKeyPress = function(event) {
+        console.log(event);
+        if (!event.keyCode === 32) {
+            return;
+        }
+        autoScroll = !autoScroll;
+    }
+
+    window.onkeypress = onKeyPress;
+    //window.onscroll = onScroll;
+
 
     if (!window.DEBUG) {
         var evtSrc = new EventSource("/subscribe");
