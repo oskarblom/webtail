@@ -22,7 +22,7 @@ def index():
     return render_template("index.html", connected=connected)
 
 def tail(sock):
-    #So we don't need to fiddle with lines and buffers
+    #So we don't need to frame our messages
     for msg in sock.makefile():
         fan.fanout(msg)
 
