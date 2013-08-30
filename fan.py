@@ -34,8 +34,7 @@ class Fan(object):
                 try:
                     while True:
                         data = q.get()
-                        ev = ServerSentEvent(str(data))
-                        yield ev.encode()
+                        yield data
                 except GeneratorExit:
                     self.subscriptions.remove(q)
 
