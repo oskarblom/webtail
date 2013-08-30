@@ -12,23 +12,13 @@
         } else {
             currentMessages++;
         }
+
         $messageContainer.append("<div class='message'>" + msg.data + "</div>");
 
         if (autoScroll) {
             window.scrollTo(0, document.body.scrollHeight);
         }
     };
-
-    /*
-    var onScroll = function(event) {
-        //console.log(event);
-        console.log(window.scrollX);
-        console.log(window.scrollY);
-        if (autoScroll) {
-            autoScroll = false;
-        }
-    };
-    */
 
     var onKeyPress = function(event) {
         console.log(event);
@@ -39,8 +29,6 @@
     }
 
     window.onkeypress = onKeyPress;
-    //window.onscroll = onScroll;
-
 
     if (!window.DEBUG) {
         var evtSrc = new EventSource("/subscribe");
