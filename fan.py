@@ -33,8 +33,8 @@ class Fan(object):
                 self.subscriptions.append(q)
                 try:
                     while True:
-                        result = q.get()
-                        ev = ServerSentEvent(str(result))
+                        data = q.get()
+                        ev = ServerSentEvent(str(data))
                         yield ev.encode()
                 except GeneratorExit:
                     self.subscriptions.remove(q)
@@ -45,5 +45,5 @@ class Fan(object):
 
     def fanout(self, data):
         msg = ServerSentEvent(data).encode()
-        for sub in self.subscriptions:
+        for sub in self.subscriptions[:]:
             sub.put(msg)
