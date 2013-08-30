@@ -1,6 +1,7 @@
 from flask import Response
 from gevent.queue import Queue
 
+# https://developer.mozilla.org/en-US/docs/Server-sent_events/Using_server-sent_events
 class ServerSentEvent(object):
 
     def __init__(self, data):

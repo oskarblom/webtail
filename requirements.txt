@@ -1,0 +1,2 @@
+Flask==0.10.1
+-e git://github.com/surfly/gevent.git@454a77ca561868854760b2d9cbfa3bf3bbd2e062#egg=gevent-1.0rc2

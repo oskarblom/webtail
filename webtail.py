@@ -24,7 +24,6 @@ def index():
 def tail():
     try:
         app.sock = sock = get_sock()
-
         #So we don't need to frame our messages
         for msg in sock.makefile():
             fan.fanout(msg)
