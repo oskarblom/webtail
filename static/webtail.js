@@ -21,7 +21,7 @@
     };
 
     var onError = function(error) {
-        console.log(error);
+        console.log("Sse error occured", e);
     };
 
     var onKeyPress = function(event) {
