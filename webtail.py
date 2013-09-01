@@ -1,10 +1,11 @@
 from gevent import monkey; monkey.patch_all()
 
 import sys
+from datetime import datetime
 
 from flask import Flask, render_template
 import gevent
-from gevent import socket
+from gevent import socket, backdoor
 from gevent.wsgi import WSGIServer
 
 from fan import Fan
@@ -16,6 +17,10 @@ fan = Fan(app)
 def debug():
     return "Currently %d subscriptions" % len(fan.subscriptions)
 
+@app.route("/lastread")
+def lastread():
+    return "Last read message was " + app.last_read
+
 @app.route("/")
 def index():
     connected = str(app.connected_mode).lower()
@@ -24,16 +29,20 @@ def index():
 def tail():
     try:
         app.sock = sock = get_sock()
+        sockfile = sock.makefile()
         #So we don't need to frame our messages
-        for msg in sock.makefile():
+        for msg in sockfile:
+            app.last_read = str(datetime.now())
             fan.fanout(msg)
 
         app.logger.warn("Server disconnected. Retrying in 5 seconds.")
 
     except socket.error:
         app.logger.warn("Unable to connect to server. Retrying in 5 seconds.")
+    except Exception, e:
+        app.logger.error("Error %s. Retrying in 5 seconds." % repr(e))
 
-    gevent.spawn_later(5, tail)
+    app.tail = gevent.spawn_later(5, tail)
 
 def get_args():
     if not len(sys.argv) == 3:
@@ -46,7 +55,7 @@ def get_args():
 
 def get_sock():
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+    #sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     sock.connect((app.remote_host, app.remote_port))
 
     return sock
@@ -55,11 +64,16 @@ if __name__ == "__main__":
     host, port = get_args()
     app.debug = True
     app.connected_mode = True if host and port else False
+    app.sock = None
+    app.last_read = None
     try:
         if app.connected_mode:
             app.remote_host = host
             app.remote_port = port
-            gevent.spawn(tail)
+            app.tail = gevent.spawn(tail)
+            manhole = backdoor.BackdoorServer(("127.0.0.1", 1337))
+            manhole.app = app
+            gevent.spawn(manhole.serve_forever)
 
         server = WSGIServer(("", 5000), app)
         server.serve_forever()
