@@ -56,7 +56,9 @@ def get_args():
 
 def get_sock():
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    #sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+    sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+    sock.setsockopt(socket.SOL_SOCKET, socket.SO_KEEPALIVE, 1)
+
     sock.connect((app.remote_host, app.remote_port))
 
     return sock
