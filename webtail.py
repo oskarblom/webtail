@@ -19,6 +19,7 @@ def debug():
 
 @app.route("/lastread")
 def lastread():
+    last_read = app.last_read if app.last_read else "never"
     return "Last read message was " + app.last_read
 
 @app.route("/")
@@ -71,8 +72,8 @@ if __name__ == "__main__":
             app.remote_host = host
             app.remote_port = port
             app.tail = gevent.spawn(tail)
-            manhole = backdoor.BackdoorServer(("127.0.0.1", 1337))
-            manhole.app = app
+            manhole = backdoor.BackdoorServer(("127.0.0.1", 1337),
+                                              locals={"app": app})
             gevent.spawn(manhole.serve_forever)
 
         server = WSGIServer(("", 5000), app)
