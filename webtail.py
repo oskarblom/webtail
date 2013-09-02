@@ -100,7 +100,7 @@ if __name__ == "__main__":
             app.tail = gevent.spawn(tail)
             manhole = backdoor.BackdoorServer(("127.0.0.1", 1337),
                                               locals={"app": app})
-            gevent.spawn(manhole.serve_forever)
+            manhole.start()
 
         server = WSGIServer(("", 5000), app)
         server.serve_forever()
