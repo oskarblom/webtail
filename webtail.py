@@ -44,6 +44,7 @@ def tail():
     try:
         app.sock = sock = get_sock()
         sockfile = sock.makefile()
+        sock.settimeout(15)
         keepalivetask = gevent.spawn(keepalive, sock)
         #So we don't need to frame our messages
         for msg in sockfile:
@@ -81,7 +82,6 @@ def get_sock():
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     sock.setsockopt(socket.SOL_SOCKET, socket.SO_KEEPALIVE, 1)
-    sock.settimeout(5)
 
     sock.connect((app.remote_host, app.remote_port))
 
