@@ -38,6 +38,10 @@ def tail():
 
         app.logger.warn("Server disconnected. Retrying in 5 seconds.")
 
+    except socket.timeout:
+        app.logger.warn("Timeout occured. Retrying in 5 seconds.")
+        app.sock.close()
+        sockfile.close()
     except socket.error:
         app.logger.warn("Unable to connect to server. Retrying in 5 seconds.")
     except Exception, e:
@@ -58,6 +62,7 @@ def get_sock():
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     sock.setsockopt(socket.SOL_SOCKET, socket.SO_KEEPALIVE, 1)
+    sock.settimeout(5)
 
     sock.connect((app.remote_host, app.remote_port))
 
