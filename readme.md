@@ -18,7 +18,8 @@ Fairly simple multiuser realtime webapp for tailing logs over the network.
 Install requirements manually 
 
 If you run into any problems. Consult one of the links in the requirements
-section.
+section. Note that gevent requires [libev]
+(http://software.schmorp.de/pkg/libev.html).
 
 
 ## Usage
