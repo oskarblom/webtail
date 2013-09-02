@@ -5,7 +5,7 @@ Fairly simple multiuser realtime webapp for tailing logs over the network.
 
 ## Requirements
 
-* [Python](http://python.org/) >) 2.6
+* [Python](http://python.org/) >= 2.6
 * [Gevent](http://www.gevent.org/) >= 1.0
 * [Flask](http://flask.pocoo.org/)
 
