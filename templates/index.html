@@ -1,8 +1,17 @@
- <html>
+<!DOCTYPE html>
+<html lang="en">
     <head>
-        <link rel="stylesheet" href="/static/webtail.css" type="text/css" charset="utf-8">
+        <meta charset="utf-8">
+        <title>Webtail</title>
+        <link rel="stylesheet" href="/static/webtail.css" type="text/css" charset="utf-8" media="all">
     </head>
     <body>
+        <div id="controlpanel">
+            <form id="controlpanelform">
+                <input type="text" placeholder="regex filter" name="filter" id="filter">
+                <input type="checkbox" name="filtertoggle" id="filtertoggle">
+            </form>
+        </div>
         <div id="container">
             <div id="messagecontainer"></div>
         </div>

@@ -4,3 +4,30 @@ body {
     font-family: courier;
     padding: 20px;
 }
+
+#container {
+    margin-top: 40px;
+}
+
+#controlpanel {
+    position: fixed;
+    top: 0;
+    right: 0;
+    background-color: rgba(119,119,119,0.5);
+    padding: 10px;
+    border-bottom-left-radius: 4px;
+}
+
+#controlpanel input[type="text"] {
+    width: 250px;
+    padding: 4px;
+    vertical-align: middle;
+    font-size: 18px;
+}
+
+#controlpanel input[type="checkbox"] {
+    -webkit-transform: scale(1.6,1.6);
+    -moz-transform: scale(1.6,1.6);
+    -o-transform: scale(1.6,1.6);
+    vertical-align: middle;
+}
