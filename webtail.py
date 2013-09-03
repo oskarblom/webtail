@@ -27,47 +27,45 @@ def index():
     connected = str(app.connected_mode).lower()
     return render_template("index.html", connected=connected)
 
-def keepalive(sock):
-    try:
-        while True:
-            sock.sendall("1")
-            gevent.sleep(20)
-    except socket.error:
-        app.logger.warn("Keepalive socket error")
-    except gevent.GreenletExit:
-        app.logger.debug("Greenlet exit")
+#def keepalive(sock):
+#    try:
+#        while True:
+#            sock.sendall("1")
+#            gevent.sleep(20)
+#    except socket.error:
+#        app.logger.warn("Keepalive socket error")
+#    except gevent.GreenletExit:
+#        app.logger.debug("Greenlet exit")
 
 def tail():
-    sock = None
-    sockfile = None
-    keepalivetask = None
-    try:
-        app.sock = sock = get_sock()
-        sockfile = sock.makefile()
-        sock.settimeout(15)
-        keepalivetask = gevent.spawn(keepalive, sock)
-        #So we don't need to frame our messages
-        for msg in sockfile:
-            app.last_read = str(datetime.now())
-            gevent.spawn(fan.fanout, msg)
+    while True:
+        sock = None
+        sockfile = None
 
-        app.logger.warn("Server disconnected. Retrying in 5 seconds.")
+        try:
+            app.sock = sock = get_sock()
+            sock.settimeout(15)
+            sockfile = sock.makefile()
+            #So we don't need to frame our messages
+            for msg in sockfile:
+                if not msg:
+                    app.logger.warn("Server disconnected")
+                    break
+                app.last_read = str(datetime.now())
+                gevent.spawn(fan.fanout, msg)
 
-    except socket.timeout:
-        app.logger.warn("Timeout occured. Retrying in 5 seconds.")
-    except socket.error:
-        app.logger.warn("Unable to connect to server. Retrying in 5 seconds.")
-    except Exception, e:
-        app.logger.error("Error %s. Retrying in 5 seconds." % repr(e))
-    finally:
-        if sock:
-            sock.close()
-        if sockfile:
-            sockfile.close()
-        if keepalivetask:
-            keepalivetask.kill()
-
-    app.tail = gevent.spawn_later(5, tail)
+        except socket.timeout:
+            app.logger.warn("Timeout occured")
+        except socket.error:
+            app.logger.warn("Socket error")
+        except Exception, e:
+            app.logger.error("Error " + repr(e))
+        finally:
+            if sock:
+                sock.close()
+            if sockfile:
+                sockfile.close()
+            gevent.sleep(5)
 
 def get_args():
     if not len(sys.argv) == 3:
