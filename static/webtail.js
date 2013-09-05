@@ -3,6 +3,8 @@
 
     var $messageContainer = $("#messagecontainer");
     var $filter = $("#filter");
+    var $form = $("#controlpanelform");
+    var $filterToggle = $("#filtertoggle");
     var currentMessages = 0;
     var autoScroll = true;
     var runFilter = false;
@@ -12,13 +14,17 @@
         if (!filter) {
             return msg;
         }
-        var matchInfo = msg.match(filter);
-        if (!matchInfo) {
+
+        var match = msg.match(filter);
+        if (!match) {
             return msg;
         }
+        var m = match[0];
+        var i = match["index"];
 
-        console.log(match);
-        return msg;
+        return msg.substr(0, i) + 
+               "<span class='hilight'>" + m + "</span>" +
+               msg.substr(i + m.length, msg.length - (i + m.length));
     };
 
     var onMessage = function(msg) {
@@ -41,13 +47,20 @@
         }
     };
 
-    var onFilterToggle = function(e) { 
+    var onFilterToggle = function(event) { 
         runFilter = !runFilter;
         if (runFilter) {
             filter = new RegExp($("#filter").val());
         }
     };
 
+    var onSubmit = function(event) {
+        event.preventDefault();
+        runFilter = true;
+        filter = new RegExp($("#filter").val());
+        console.log($filterToggle);
+        $filterToggle.prop("checked", true);
+    };
 
     var onError = function(error) {
         console.log("Sse error occured", e);
@@ -62,7 +75,8 @@
 
     // Main
     
-    $("#filtertoggle").on("click", onFilterToggle);
+    $filterToggle.on("click", onFilterToggle);
+    $form.on("submit", onSubmit);
     window.onkeypress = onKeyPress;
 
     if (!window.DEBUG) {
@@ -70,8 +84,8 @@
         evtSrc.onmessage = onMessage;
         evtSrc.onerror = onError;
     } else {
-        var baconIpsum = ["error when doing stuff with error"];
-        //var baconIpsum = ["adipisicing", "beef", "chuck", "shank", "tongue", "fugiat", "meatball", "sunt", "incididunt", "short", "loin", "sint", "beef", "aliqua", "tri-tip", "nisi", "deserunt", "shoulder", "frankfurter", "turducken", "biltong", "meatball", "adipisicing", "esse", "dolore", "rump", "tongue", "duis", "swine", "salami", "fatback", "chicken", "laborum", "pariatur", "rump", "swine", "salami", "shank", "boudin", "voluptate", "aliqua", "turkey", "drumstick", "magna", "short", "ribs", "sirloin", "frankfurter", "veniam", "sed", "enim", "dolore", "ut", "venison", "nisi", "est", "bacon", "salami", "tongue", "nulla", "beef", "corned", "beef", "consequat", "short", "ribs", "prosciutto", "qui", "officia", "doner", "sed"];
+        //var baconIpsum = ["error when doing stuff with error"];
+        var baconIpsum = ["adipisicing", "beef", "chuck", "shank", "tongue", "fugiat", "meatball", "sunt", "incididunt", "short", "loin", "sint", "beef", "aliqua", "tri-tip", "nisi", "deserunt", "shoulder", "frankfurter", "turducken", "biltong", "meatball", "adipisicing", "esse", "dolore", "rump", "tongue", "duis", "swine", "salami", "fatback", "chicken", "laborum", "pariatur", "rump", "swine", "salami", "shank", "boudin", "voluptate", "aliqua", "turkey", "drumstick", "magna", "short", "ribs", "sirloin", "frankfurter", "veniam", "sed", "enim", "dolore", "ut", "venison", "nisi", "est", "bacon", "salami", "tongue", "nulla", "beef", "corned", "beef", "consequat", "short", "ribs", "prosciutto", "qui", "officia", "doner", "sed"];
         (function debug() {
             var baconIndex = Math.floor(Math.random() * baconIpsum.length);
             onMessage({ data: baconIpsum[baconIndex]});

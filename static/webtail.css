@@ -9,6 +9,11 @@ body {
     margin-top: 40px;
 }
 
+.hilight {
+    color: yellow;
+    font-weight: bold;
+}
+
 #controlpanel {
     position: fixed;
     top: 0;
@@ -31,3 +36,4 @@ body {
     -o-transform: scale(1.6,1.6);
     vertical-align: middle;
 }
+
