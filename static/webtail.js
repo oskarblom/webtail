@@ -67,10 +67,12 @@
     };
 
     var onKeyPress = function(event) {
-        if (event.keyCode !== 32 && event.keyCode !== 27) {
+        if ($filter.is(":focus")) {
             return;
         }
-        autoScroll = !autoScroll;
+        if (event.keyCode === 32 || event.keyCode === 27) {
+            autoScroll = !autoScroll;
+        }
     }
 
     // Main
