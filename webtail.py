@@ -27,15 +27,6 @@ def index():
     connected = str(app.connected_mode).lower()
     return render_template("index.html", connected=connected)
 
-#def keepalive(sock):
-#    try:
-#        while True:
-#            sock.sendall("1")
-#            gevent.sleep(20)
-#    except socket.error:
-#        app.logger.warn("Keepalive socket error")
-#    except gevent.GreenletExit:
-#        app.logger.debug("Greenlet exit")
 
 def tail():
     while True:
@@ -44,15 +35,18 @@ def tail():
 
         try:
             app.sock = sock = get_sock()
-            sock.settimeout(15)
+            sock.settimeout(5)
             sockfile = sock.makefile()
-            #So we don't need to frame our messages
-            for msg in sockfile:
+
+            while True:
+                #So we don't need to frame our messages
+                msg = sockfile.readline()
                 if not msg:
-                    app.logger.warn("Server disconnected")
                     break
                 app.last_read = str(datetime.now())
                 gevent.spawn(fan.fanout, msg)
+
+            app.logger.warn("Server disconnected")
 
         except socket.timeout:
             app.logger.warn("Timeout occured")
