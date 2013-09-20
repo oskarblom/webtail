@@ -35,25 +35,23 @@ def tail():
 
         try:
             app.sock = sock = get_sock()
-            sock.settimeout(5)
             sockfile = sock.makefile()
 
             while True:
                 #So we don't need to frame our messages
                 msg = sockfile.readline()
                 if not msg:
+                    app.logger.warn("Msg was empty. Server disconnected.")
                     break
                 app.last_read = str(datetime.now())
                 gevent.spawn(fan.fanout, msg)
-
-            app.logger.warn("Msg was empty. Server disconnected.")
 
         except socket.timeout:
             app.logger.warn("Socket timeout occured")
         except socket.error:
             app.logger.warn("Socket error occured")
         except Exception, e:
-            app.logger.error("Error " + repr(e))
+            app.logger.error("Error %r" % e)
         finally:
             if sock:
                 sock.close()
@@ -62,7 +60,7 @@ def tail():
             gevent.sleep(5)
 
 def get_args():
-    if not len(sys.argv) == 3:
+    if not sys.argc == 3:
         sys.stderr.write(
             "Warning: missing arguments. Starting in disconnected mode\n" +
             "Usage: python webtail.py remotehost port\n")
@@ -74,7 +72,7 @@ def get_sock():
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     sock.setsockopt(socket.SOL_SOCKET, socket.SO_KEEPALIVE, 1)
-
+    sock.settimeout(5)
     sock.connect((app.remote_host, app.remote_port))
 
     return sock
