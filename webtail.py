@@ -46,12 +46,12 @@ def tail():
                 app.last_read = str(datetime.now())
                 gevent.spawn(fan.fanout, msg)
 
-            app.logger.warn("Server disconnected")
+            app.logger.warn("Msg was empty. Server disconnected.")
 
         except socket.timeout:
-            app.logger.warn("Timeout occured")
+            app.logger.warn("Socket timeout occured")
         except socket.error:
-            app.logger.warn("Socket error")
+            app.logger.warn("Socket error occured")
         except Exception, e:
             app.logger.error("Error " + repr(e))
         finally:
@@ -99,4 +99,5 @@ if __name__ == "__main__":
     except KeyboardInterrupt:
         if app.sock:
             app.sock.close()
+        manhole.close()
         server.close()
