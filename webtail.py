@@ -57,10 +57,11 @@ def tail():
                 sock.close()
             if sockfile:
                 sockfile.close()
-            gevent.sleep(5)
+
+        gevent.sleep(5)
 
 def get_args():
-    if not sys.argc == 3:
+    if not len(sys.argv) == 3:
         sys.stderr.write(
             "Warning: missing arguments. Starting in disconnected mode\n" +
             "Usage: python webtail.py remotehost port\n")
@@ -72,7 +73,7 @@ def get_sock():
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     sock.setsockopt(socket.SOL_SOCKET, socket.SO_KEEPALIVE, 1)
-    sock.settimeout(5)
+    #sock.settimeout(5)
     sock.connect((app.remote_host, app.remote_port))
 
     return sock
