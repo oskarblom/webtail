@@ -9,6 +9,10 @@ body {
     margin-top: 40px;
 }
 
+.message {
+    margin-bottom: 6px;
+}
+
 .hilight {
     color: yellow;
     font-weight: bold;
