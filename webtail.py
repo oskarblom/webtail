@@ -48,8 +48,9 @@ def tail():
 
         except socket.timeout:
             app.logger.warn("Socket timeout occured")
-        except socket.error:
-            app.logger.warn("Socket error occured")
+        except socket.error, e:
+            app.logger.error("Socket error occured. %s - errno: %s" %
+                             (e.strerror, e.errno))
         except Exception, e:
             app.logger.error("Error %r" % e)
         finally:
